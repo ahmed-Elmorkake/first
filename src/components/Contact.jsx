@@ -1,5 +1,47 @@
 import { CheckCircle2 } from 'lucide-react'
 import { useState } from 'react'
+import AccessGate from './AccessGate'
+import { useAuth } from '../auth/AuthContext'
+
 const recipientEmail = 'am736347@gmail.com'
 
-function Contact(){const [form,setForm]=useState({name:'',email:'',message:''}),[sent,setSent]=useState(false),[error,setError]=useState('');const submit=e=>{e.preventDefault();if(!form.name.trim()||!/^\S+@\S+\.\S+$/.test(form.email)){setError('Please enter your name and a valid email address.');return}const subject=encodeURIComponent(`Aurea enquiry from ${form.name}`);const body=encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message||'No message provided.'}`);setError('');setSent(true);window.location.href=`mailto:${recipientEmail}?subject=${subject}&body=${body}`;setForm({name:'',email:'',message:''})};return <section id="contact" className="py-24 sm:py-32"><div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-2 lg:px-8"><div><p className="text-xs font-bold tracking-[.2em] text-amber-700">LET'S TALK</p><h2 className="mt-3 font-serif text-5xl sm:text-6xl">Your next chapter <em className="font-normal">starts here.</em></h2><p className="mt-6 max-w-md text-slate-600">Our private sales team would be delighted to introduce you to Aurea and arrange a personal viewing.</p><div className="mt-12 space-y-3 text-slate-700"><p>+971 4 555 0182</p><p><a className="hover:text-amber-700" href={`mailto:${recipientEmail}`}>{recipientEmail}</a></p><p>18 Marina Promenade, Dubai</p></div></div><form onSubmit={submit} noValidate className="rounded-2xl bg-stone-100 p-6 sm:p-9"><div className="grid gap-5"><label className="text-sm font-bold">Name<input className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 outline-none focus:border-amber-600" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} aria-invalid={Boolean(error)} /></label><label className="text-sm font-bold">Email<input className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 outline-none focus:border-amber-600" type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} aria-invalid={Boolean(error)} /></label><label className="text-sm font-bold">How can we help?<textarea className="mt-2 min-h-28 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 outline-none focus:border-amber-600" value={form.message} onChange={e=>setForm({...form,message:e.target.value})}/></label>{error&&<p className="text-sm text-red-700" role="alert">{error}</p>}{sent&&<p className="flex items-center gap-2 text-sm text-emerald-700" role="status"><CheckCircle2 size={18}/> Your email app has opened with your enquiry ready to send.</p>}<button className="rounded-full bg-slate-900 px-6 py-4 text-sm font-bold text-white hover:bg-amber-700" type="submit">Send enquiry</button></div></form></div></section>};export default Contact
+function ContactForm() {
+  const { user } = useAuth()
+  const [form, setForm] = useState({ name: user.name, email: user.email, message: '' })
+  const [sent, setSent] = useState(false)
+  const [error, setError] = useState('')
+
+  const submit = event => {
+    event.preventDefault()
+    if (!form.name.trim() || !/^\S+@\S+\.\S+$/.test(form.email)) {
+      setError('Please enter your name and a valid email address.')
+      return
+    }
+    const subject = encodeURIComponent(`Aurea enquiry from ${form.name}`)
+    const body = encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message || 'No message provided.'}`)
+    setError('')
+    setSent(true)
+    window.location.href = `mailto:${recipientEmail}?subject=${subject}&body=${body}`
+    setForm({ name: user.name, email: user.email, message: '' })
+  }
+
+  return <form onSubmit={submit} noValidate className="rounded-2xl bg-stone-100 p-6 sm:p-9">
+    <div className="grid gap-5">
+      <label className="text-sm font-bold">Name<input className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 outline-none focus:border-amber-600" value={form.name} onChange={event => setForm({ ...form, name: event.target.value })} aria-invalid={Boolean(error)} /></label>
+      <label className="text-sm font-bold">Email<input className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 outline-none focus:border-amber-600" type="email" value={form.email} onChange={event => setForm({ ...form, email: event.target.value })} aria-invalid={Boolean(error)} /></label>
+      <label className="text-sm font-bold">How can we help?<textarea className="mt-2 min-h-28 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 outline-none focus:border-amber-600" value={form.message} onChange={event => setForm({ ...form, message: event.target.value })} /></label>
+      {error && <p className="text-sm text-red-700" role="alert">{error}</p>}
+      {sent && <p className="flex items-center gap-2 text-sm text-emerald-700" role="status"><CheckCircle2 size={18}/> Your email app has opened with your enquiry ready to send.</p>}
+      <button className="rounded-full bg-slate-900 px-6 py-4 text-sm font-bold text-white hover:bg-amber-700" type="submit">Send enquiry</button>
+    </div>
+  </form>
+}
+
+function Contact({ onAuthOpen }) {
+  return <section id="contact" className="py-24 sm:py-32"><div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-2 lg:px-8">
+    <div><p className="text-xs font-bold tracking-[.2em] text-amber-700">LET'S TALK</p><h2 className="mt-3 font-serif text-5xl sm:text-6xl">Your next chapter <em className="font-normal">starts here.</em></h2><p className="mt-6 max-w-md text-slate-600">Our private sales team would be delighted to introduce you to Aurea and arrange a personal viewing.</p><div className="mt-12 space-y-3 text-slate-700"><p>+971 4 555 0182</p><p><a className="hover:text-amber-700" href={`mailto:${recipientEmail}`}>{recipientEmail}</a></p><p>18 Marina Promenade, Dubai</p></div></div>
+    <AccessGate onSignIn={onAuthOpen}><ContactForm /></AccessGate>
+  </div></section>
+}
+
+export default Contact

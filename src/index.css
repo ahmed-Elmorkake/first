@@ -4,6 +4,11 @@
 html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; font-family: var(--font-display); }
 button, input, select, textarea { font: inherit; }
+@keyframes residence-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.residence-fade-in { animation: residence-fade-in 360ms ease-out both; }
 .gallery-track { transform: translateX(0); }
 .gallery-track.slide-1 { transform: translateX(-100%); }
 .gallery-track.slide-2 { transform: translateX(-200%); }
